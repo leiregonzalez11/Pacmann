@@ -339,6 +339,25 @@ var GF = function(){
     
 		// test1 
 		// Tu codigo aquí (solo tu código y la instrucción requestAnimationFrame(mainLoop);)
+
+		/*var radio = 5;
+		var borde ="green";
+		var fondo = "green";
+		var x = Math.random()*canvas.width;
+		var y = Math.random()*canvas.height;
+		var ini = (Math.PI/180)*0;
+  		var fin = (Math.PI/180)*360;
+
+		context = canvas.getContext("2d");
+		context.beginPath();
+		context.arc(x,y,radio,ini,fin,false);
+		context.fillStyle = fondo;
+		context.fill();
+		context.strokeStyle = borde;
+		context.stroke();*/
+
+
+
 		// A partir del test2 deberás borrar lo implementado en el test1
 		
     		// >=test2
@@ -456,10 +475,10 @@ var GF = function(){
 		ghosts: ghosts, 
 		
 		// solo para el test12
-		thisLevel: thisLevel
+		thisLevel: thisLevel,
 		
 		// solo para el test 13
-		Ghost: Ghost
+		Ghost: Ghost,
 		
 		// solo para el test14
 		thisGame: thisGame
