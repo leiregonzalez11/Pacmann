@@ -235,6 +235,23 @@ var GF = function(){
 		// test2   
 		// Tu código aquí
 		// ojo: en el test2 esta función se llama drawPacman(x,y))
+
+		//TODO:NO SE PINTA EL BORDE DEL PICO, MIRAR COMO HACERLO
+
+			ctx.beginPath();
+			ctx.strokeStyle = borde;
+			ctx.fillStyle = fondo;
+
+			ctx.arc(x+radio,y+radio,radio, 0.25 * Math.PI, 1.25 * Math.PI,false);
+			ctx.fill();
+			ctx.stroke();
+
+			ctx.beginPath();
+
+			ctx.arc(x+radio, y+radio, radio, 0.75 * Math.PI, 1.75 * Math.PI, false);
+			ctx.fill();
+			ctx.stroke();
+
     	};
     	
     	// >=test5
