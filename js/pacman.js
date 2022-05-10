@@ -20,6 +20,8 @@ var GF = function(){
  	
  	// >=test4
 	//  variable global temporalmente para poder testear el ejercicio
+    inputStates = {left:false, right:false, space:false,up:false, down:false};
+
 
 	// >=test10
 	const TILE_WIDTH=24, TILE_HEIGHT=24;
@@ -141,7 +143,7 @@ var GF = function(){
 	    			'door-h' : 20,
 				'door-v' : 21,
 				'pellet-power' : 3
-			
+
 		
 			// test6
 			// Tu código aquí
@@ -212,8 +214,7 @@ var GF = function(){
         let pacman = new Pacman();
 
 		//test3
-
-        pacman.draw(this.posX, this.posY);
+        /*pacman.draw(this.posX, this.posY);
         if(dirDerecha){
             if(this.posX < w - this.radius){
                 this.posX=this.posX+this.speed;
@@ -229,13 +230,35 @@ var GF = function(){
             else{
                 dirDerecha = true;
             }
-        }
+        }*/
 
 		//test4
 
+        player.draw(this.x,this.y);
 
+        //Movimiento horizontal
+        if(player.x + player.velX > w - 2*player.radius){//Choca en el borde derecho
+            inputStates.right = false;
+        }
+        else if(player.x + player.velX == 0){//Choca en el borde izquierdo
+            inputStates.left = false;
+        }
+        else {
+            player.x = player.x + player.velX;
+        }
 
-		// >=test8: introduce esta instrucción 
+        //Movimiento vertical
+        if(player.y + player.velY > h - 2*player.radius){ //Choca en el borde inferior
+            inputStates.down = false;
+        }
+        else if(player.y + player.velY == 0){ //Choca en el borde superior
+            inputStates.up = false;
+        }
+        else{
+            player.y = player.y + player.velY;
+        }
+
+        // >=test8: introduce esta instrucción
 		// dentro del código implementado en el test7:
 		// tras actualizar this.x  y  this.y... 
 		// check for collisions with other tiles (pellets, etc)
@@ -361,6 +384,25 @@ var GF = function(){
 		// test4
 		// Tu código aquí (reestructúralo para el test7)
 
+        if(inputStates.right){
+            player.x= player.x + player.speed;
+            player.velY = 0;
+        }
+        if(inputStates.left){
+            player.x = player.x - player.speed;
+            player.velY = 0;
+        }
+        if(inputStates.up){
+            player.y = player.y - player.speed;
+            player.velX = 0;
+        }
+        if(inputStates.down){
+            player.y = player.y + player.speed;
+            player.velX = 0;
+        }
+        if(inputStates.space){
+            console.log("Ha pulsado espacio");
+        }
 
 		// test7
 		// Tu código aquí
@@ -465,8 +507,21 @@ var GF = function(){
 		// add the listener to the main, window object, and update the states
 		// test4
 		// Tu código aquí
-
-};
+        window.addEventListener( "keydown", function(event){
+            tecla = event.keyCode;
+            if(tecla == 37){
+                inputStates.left = true;
+            }else if(tecla == 39){
+                inputStates.right = true;
+            }else if(tecla == 38){
+                inputStates.up = true;
+            }else if(tecla == 40){
+                inputStates.down = true;
+            }else if (tecla == 8){
+                inputStates.space = true;
+            }
+        }, false );
+    };
 	
 	
 	//>=test7
