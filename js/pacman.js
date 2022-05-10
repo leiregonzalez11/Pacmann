@@ -5,6 +5,7 @@ var ctx = canvas.getContext("2d");
 var w = canvas.width;
 var h = canvas.height;
 
+
 // >=test1
 // GAME FRAMEWORK 
 var GF = function(){
@@ -14,11 +15,11 @@ var GF = function(){
 	var frameCount = 0;
 	var lastTime;
 	var fpsContainer;
-	var fps; 
+	var fps;
+    var dirDerecha = true;
  	
  	// >=test4
 	//  variable global temporalmente para poder testear el ejercicio
-	inputStates = {};
 
 	// >=test10
 	const TILE_WIDTH=24, TILE_HEIGHT=24;
@@ -108,12 +109,13 @@ var GF = function(){
 
 		this.getMapTile = function(row, col){
 			// test5
-			// Tu código aquí	
+			// Tu código aquí
 		};
 
 		this.printMap = function(){
 			// test5
 			// Tu código aquí
+
 		};
 
 		this.loadLevel = function(){
@@ -121,6 +123,9 @@ var GF = function(){
 			// Tu código aquí
 			// leer res/levels/1.txt y guardarlo en el atributo map	
 			// haciendo uso de setMapTile
+
+
+		}
 		
 			// test10
 			// Tu código aquí
@@ -136,7 +141,7 @@ var GF = function(){
 	    			'door-h' : 20,
 				'door-v' : 21,
 				'pellet-power' : 3
-			};
+			
 		
 			// test6
 			// Tu código aquí
@@ -190,10 +195,10 @@ var GF = function(){
 	
 	// >=test2
 	var Pacman = function() {
-		this.radius = 10;
-		this.x = 0;
-		this.y = 0;
-		this.speed = 3;
+		this.radius = 15;
+		this.posX = 0;
+		this.posY = 0;
+		this.speed = 5;
 		this.angle1 = 0.25;
 		this.angle2 = 1.75;
 	};
@@ -203,8 +208,33 @@ var GF = function(){
 	
 		// test3 / test4 / test7
 		// Tu código aquí
-		
-		
+
+        let pacman = new Pacman();
+
+		//test3
+
+        pacman.draw(this.posX, this.posY);
+        if(dirDerecha){
+            if(this.posX < w - this.radius){
+                this.posX=this.posX+this.speed;
+            }
+            else{
+                dirDerecha = false;
+            }
+        }
+        else{
+            if(this.posX > this.radius){
+                this.posX = this.posX - this.speed;
+            }
+            else{
+                dirDerecha = true;
+            }
+        }
+
+		//test4
+
+
+
 		// >=test8: introduce esta instrucción 
 		// dentro del código implementado en el test7:
 		// tras actualizar this.x  y  this.y... 
@@ -236,23 +266,21 @@ var GF = function(){
 		// Tu código aquí
 		// ojo: en el test2 esta función se llama drawPacman(x,y))
 
-		//TODO:NO SE PINTA EL BORDE DEL PICO, MIRAR COMO HACERLO
+		const borde = "black";
+		const fondo = "yellow";
 
-			ctx.beginPath();
-			ctx.strokeStyle = borde;
-			ctx.fillStyle = fondo;
+		const pc = new Pacman();
 
-			ctx.arc(x+radio,y+radio,radio, 0.25 * Math.PI, 1.25 * Math.PI,false);
-			ctx.fill();
-			ctx.stroke();
+		ctx.beginPath();
+		ctx.strokeStyle = borde;
+		ctx.fillStyle = fondo;
 
-			ctx.beginPath();
-
-			ctx.arc(x+radio, y+radio, radio, 0.75 * Math.PI, 1.75 * Math.PI, false);
-			ctx.fill();
-			ctx.stroke();
-
-    	};
+		ctx.arc(x+pc.radius,y+pc.radius,pc.radius,pc.angle1*Math.PI,pc.angle2*Math.PI, false);
+		ctx.lineTo(x+pc.radius, y+pc.radius);
+		ctx.closePath();
+		ctx.fill();
+		ctx.stroke();
+	};
     	
     	// >=test5
 	var player = new Pacman();
@@ -329,11 +357,11 @@ var GF = function(){
 	};
 
 	// >=test4
-	var checkInputs = function(){
-		
+	let checkInputs = function(){
 		// test4
 		// Tu código aquí (reestructúralo para el test7)
-		
+
+
 		// test7
 		// Tu código aquí
 		// LEE bien el enunciado, especialmente la nota de ATENCION que
@@ -373,8 +401,6 @@ var GF = function(){
 		context.strokeStyle = borde;
 		context.stroke();*/
 
-
-
 		// A partir del test2 deberás borrar lo implementado en el test1
 		
     		// >=test2
@@ -391,7 +417,8 @@ var GF = function(){
 		// test10
 		// Tu código aquí
 		// Mover fantasmas
-		
+
+
 		// >=test3
 		//ojo: en el test3 esta instrucción es pacman.move()
 		player.move();
@@ -438,7 +465,8 @@ var GF = function(){
 		// add the listener to the main, window object, and update the states
 		// test4
 		// Tu código aquí
-	};
+
+};
 	
 	
 	//>=test7
@@ -484,19 +512,19 @@ var GF = function(){
 	//our GameFramework returns a public API visible from outside its scope
 	return {
 		start: start,
-		
-		// solo para el test 10 
+
+		// solo para el test 10
 		ghost: Ghost,  // exportando Ghost para poder probarla
-		
+
 		// solo para estos test: test12 y test13
-		ghosts: ghosts, 
-		
+		ghosts: ghosts,
+
 		// solo para el test12
 		thisLevel: thisLevel,
-		
+
 		// solo para el test 13
 		Ghost: Ghost,
-		
+
 		// solo para el test14
 		thisGame: thisGame
 	};
