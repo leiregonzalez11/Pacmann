@@ -107,17 +107,22 @@ var GF = function(){
 		this.setMapTile = function(row, col, newValue){
 			// test5
 			// Tu código aquí
+            if(newValue == 2 || newValue == 3){
+                this.pellets++;
+            }
+            this.map[(row * this.lvlWidth) + col] = newValue;
 		};
 
 		this.getMapTile = function(row, col){
 			// test5
 			// Tu código aquí
+            return this.map[(row * this.lvlWidth) + col];
 		};
 
 		this.printMap = function(){
 			// test5
 			// Tu código aquí
-
+            console.log(this.map);
 		};
 
 		this.loadLevel = function(){
@@ -126,9 +131,30 @@ var GF = function(){
 			// leer res/levels/1.txt y guardarlo en el atributo map	
 			// haciendo uso de setMapTile
 
+            $.ajaxSetup({async:false});
+
+            $.get("../res/levels/1.txt", (data) => {
+                let part = data.split("#");
+
+                let valores = part[1].split(" ");
+                this.lvlWidth = valores[2];
+                valores = part[2].split(" ");
+                this.lvlHeight = valores[2];
+                valores = part[3].split("\n");
+                let filas = valores.slice(1, valores.length - 1);
+
+                $.each(filas, (n, elem1) => {
+                    let nums = elem1.split(" ");
+                    $.each(nums, (m, elem2) => {
+                        this.setMapTile(n,m,elem2);
+                    });
+
+                });
+            });
+            this.printMap();
+
 
 		}
-		
 			// test10
 			// Tu código aquí
 		};
@@ -522,7 +548,6 @@ var GF = function(){
             }
         }, false );
     };
-	
 	
 	//>=test7
 	var reset = function(){
