@@ -219,6 +219,14 @@ var GF = function(){
 		this.isWall = function(row, col) {
 			// test7
 			// Tu código aquí
+
+			let baldosa = this.getMapTile(row, col);
+			var tipoBaldosa = parseInt(baldosa);
+
+			if (tipoBaldosa >= 100 && tipoBaldosa <= 199){
+				return true;
+			}
+			return false;
 		};
 
 		// >=test7
@@ -227,6 +235,15 @@ var GF = function(){
 			// Tu código aquí
 			// Determinar si el jugador va a moverse a una fila,columna que tiene pared 
 			// Hacer uso de isWall
+
+			if ((possiblePlayerX % 12 ==0) || ( possiblePlayerY % 12 == 0)){
+				let row = Math.trunc(((possiblePlayerY)/24));
+				let col = Math.trunc(((possiblePlayerX)/24));
+				return this.isWall(row,col);
+			}
+
+			return true;
+
 		};
 		
 		// >=test11
@@ -299,7 +316,7 @@ var GF = function(){
 
 		//test4
 
-        player.draw(this.x,this.y);
+        /*player.draw(this.x,this.y);
 
         //Movimiento en el eje X
         if (player.x + player.velX > w - 2 * player.radius){//Choca en el borde derecho
@@ -321,12 +338,35 @@ var GF = function(){
         }
         else {
             player.y = player.y + player.velY;
-        }
+        }*/
 
-        // >=test8: introduce esta instrucción
+		//test 7
+
+		if(player.x > w - player.radius){
+			inputStates.right=false;
+		}
+		else if(player.x + player.velX == 0){
+			inputStates.left=false;
+		}
+		else if(player.y > h - player.radius){
+			inputStates.down=false;
+		}
+		else if(player.y + player.velY == 0){
+			inputStates.up=false;
+		}
+		else{
+			player.y = player.y + player.velY;
+			player.x = player.x + player.velX;
+
+		}
+
+		// >=test8: introduce esta instrucción
 		// dentro del código implementado en el test7:
 		// tras actualizar this.x  y  this.y... 
 		// check for collisions with other tiles (pellets, etc)
+
+
+
 		thisLevel.checkIfHitSomething(this.x, this.y, this.nearestRow, this.nearestCol);
 		
 		// test11
@@ -449,7 +489,7 @@ var GF = function(){
 		// test4
 		// Tu código aquí (reestructúralo para el test7)
 
-        if(inputStates.right){
+       /* if(inputStates.right){
             player.x= player.x + player.speed;
             player.velY = 0;
         }
@@ -467,12 +507,46 @@ var GF = function(){
         }
         if(inputStates.space){
             console.log("Ha pulsado espacio");
-        }
+        }*/
 
 		// test7
 		// Tu código aquí
 		// LEE bien el enunciado, especialmente la nota de ATENCION que
 		// se muestra tras el test 7
+
+		var TILE_WIDTH = thisGame.TILE_WIDTH;
+		var TILE_HEIGHT = thisGame.TILE_HEIGHT;
+
+		if((player.x % (TILE_WIDTH/2)) == 0 && !((player.x % TILE_WIDTH) == 0) && (player.y % (TILE_HEIGHT/2)) == 0 && !((player.y%TILE_WIDTH) == 0) ){
+
+			if(inputStates.right && !thisLevel.checkIfHitWall(player.x + 4 * player.speed, player.y,0,0)){ //Pulsa hacia derecha y no toca borde
+				player.velX = player.speed;
+				player.velY = 0;
+			}
+			else if(inputStates.left && !thisLevel.checkIfHitWall(player.x - 5*player.speed, player.y,0,0)){ //Pulsa hacia izquierda y no toca borde
+				player.velX = -player.speed;
+				player.velY = 0;
+
+			}
+			else if(inputStates.up && !thisLevel.checkIfHitWall(player.x, player.y-5*player.speed,0,0)){ //Pulsa hacia arriba y no toca borde
+				player.velY = -player.speed;
+				player.velX = 0;
+
+			}
+			else if(inputStates.down && !thisLevel.checkIfHitWall(player.x, player.y+4*player.speed,0,0)){ //Pulsa hacia abajo y no toca borde
+				player.velY = player.speed;
+				player.velX = 0;
+
+			}
+			else if(inputStates.space){ //Pulsa espacio
+				console.log("Ha pulsado espacio");
+			}
+			else{ //Sin movimiento ni keydown
+				player.velX=0;
+				player.velY=0;
+
+			}
+		}
 	};
 
 	// >=test12
@@ -574,16 +648,42 @@ var GF = function(){
 		// Tu código aquí
         window.addEventListener( "keydown", function(event){
             tecla = event.keyCode;
-            if(tecla == 37){
-                inputStates.left = true;
-            }else if(tecla == 39){
-                inputStates.right = true;
-            }else if(tecla == 38){
-                inputStates.up = true;
-            }else if(tecla == 40){
-                inputStates.down = true;
-            }else if (tecla == 8){
-                inputStates.space = true;
+            if(tecla == 37){ //Izquierda
+				inputStates.left=true;
+				inputStates.right=false;
+				inputStates.up=false;
+				inputStates.space=false;
+				inputStates.down=false;
+            }
+			else if(tecla == 39){ //Derecha
+				inputStates.right=true;
+				inputStates.left=false;
+				inputStates.down=false;
+				inputStates.up=false;
+				inputStates.space=false;
+            }
+			else if(tecla == 38){ //Arriba
+				inputStates.up=true;
+				inputStates.right=false;
+				inputStates.left=false;
+				inputStates.down=false;
+				inputStates.space=false;
+            }
+
+			else if(tecla == 40){ //Abajo
+				inputStates.down=true;
+				inputStates.up=false;
+				inputStates.right=false;
+				inputStates.left=false;
+				inputStates.space=false;
+            }
+
+			else if (tecla == 8){ //Espacio
+				inputStates.space=true;
+				inputStates.right=false;
+				inputStates.left=false;
+				inputStates.down=false;
+				inputStates.up=false;
             }
         }, false );
     };
@@ -600,7 +700,22 @@ var GF = function(){
 		// Tu código aquí
 		// Inicialmente Pacman debe empezar a moverse en horizontal hacia la derecha, con una velocidad igual a su atributo speed
 		// inicializa la posición inicial de Pacman tal y como indica el enunciado
-	
+
+		let TILE_WIDTH = thisGame.TILE_WIDTH;
+		let TILE_HEIGHT = thisGame.TILE_HEIGHT;
+
+		for (let j = 0; j <= this.screenTileSize[0]; j++){ //Fila
+			for (let i = 0; i <= this.screenTileSize[1] - 1; i++){ //Columna
+				let baldosa = thisLevel.getMapTile(j, i);
+				var tipoBaldosa = parseInt(baldosa);
+
+				if (tipoBaldosa == 4){ //Tipo baldosa = Pacman
+					player.x = i * TILE_WIDTH + (TILE_WIDTH/2);
+					player.y = j * TILE_HEIGHT + (TILE_HEIGHT/2);
+				}
+			}
+		}
+
 		// test10
 		// Tu código aquí
 		// Inicializa los atributos x,y, velX, velY, speed de la clase Ghost de forma conveniente
