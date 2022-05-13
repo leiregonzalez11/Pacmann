@@ -20,7 +20,7 @@ var GF = function(){
  	
  	// >=test4
 	//  variable global temporalmente para poder testear el ejercicio
-    inputStates = {left:false, right:false, space:false,up:false, down:false};
+    inputStates = {left: false, right: false, up: false, down: false, space: false};
 
 
 	// >=test10
@@ -153,26 +153,66 @@ var GF = function(){
             });
             this.printMap();
 
-
-		}
 			// test10
 			// Tu código aquí
 		};
 
 		// >=test6
-         	this.drawMap = function(){
+		this.drawMap = function(){
 
-	    		var TILE_WIDTH = thisGame.TILE_WIDTH;
-	    		var TILE_HEIGHT = thisGame.TILE_HEIGHT;
-	
-    			var tileID = {
-	    			'door-h' : 20,
-				'door-v' : 21,
-				'pellet-power' : 3
+			let TILE_WIDTH = thisGame.TILE_WIDTH;
+			let TILE_HEIGHT = thisGame.TILE_HEIGHT;
 
-		
+			var tileID = {
+				'door-h': 20,
+				'door-v': 21,
+				'pellet-power': 3
+
+			};
+
 			// test6
 			// Tu código aquí
+
+			for (let j=0; j<=thisGame.screenTileSize[0];j++){
+				for (let i=0; i<=thisGame.screenTileSize[1]-1;i++){
+
+					let baldosa = this.getMapTile(j, i);
+					let tipobaldosa = parseInt(baldosa);
+
+					if(tipobaldosa >= 100 && tipobaldosa <= 199){ //Borde
+						ctx.fillStyle = "blue";
+						ctx.fillRect(i*TILE_WIDTH, j*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+						ctx.stroke();
+					}
+					else if(tipobaldosa == 4){ //Pacman
+						player.x = i*TILE_WIDTH;
+						player.y = j*TILE_WIDTH;
+					}
+					else if(tipobaldosa >= 10 && tipobaldosa <= 13){ //Camino
+						ctx.fillStyle = "black";
+						ctx.fillRect(i*TILE_WIDTH, j*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+						ctx.stroke();
+					}
+
+					else if( tipobaldosa == 2){ //Circulo blanco
+						ctx.beginPath();
+						ctx.fillStyle = "white";
+						ctx.arc(i*TILE_WIDTH+12, j*TILE_HEIGHT+12, 5, 0, 2 * Math.PI, true);
+						ctx.fill();
+						ctx.stroke();
+						ctx.closePath();
+
+					}
+					else if(tipobaldosa == 3){ //Circulo rojo
+						ctx.beginPath();
+						ctx.fillStyle = "red";
+						ctx.arc(i*TILE_WIDTH+12, j*TILE_HEIGHT+12, 5, 0, 2 * Math.PI, true);
+						ctx.fill();
+						ctx.stroke();
+						ctx.closePath();
+					}
+				}
+			}
 		};
 
 		// >=test7
@@ -237,10 +277,9 @@ var GF = function(){
 		// test3 / test4 / test7
 		// Tu código aquí
 
-        let pacman = new Pacman();
-
 		//test3
-        /*pacman.draw(this.posX, this.posY);
+		/*let pacman = new Pacman();
+        pacman.draw(this.posX, this.posY);
         if(dirDerecha){
             if(this.posX < w - this.radius){
                 this.posX=this.posX+this.speed;
@@ -262,25 +301,25 @@ var GF = function(){
 
         player.draw(this.x,this.y);
 
-        //Movimiento horizontal
-        if(player.x + player.velX > w - 2*player.radius){//Choca en el borde derecho
+        //Movimiento en el eje X
+        if (player.x + player.velX > w - 2 * player.radius){//Choca en el borde derecho
             inputStates.right = false;
         }
-        else if(player.x + player.velX == 0){//Choca en el borde izquierdo
+        else if (player.x + player.velX == 0){//Choca en el borde izquierdo
             inputStates.left = false;
         }
         else {
             player.x = player.x + player.velX;
         }
 
-        //Movimiento vertical
-        if(player.y + player.velY > h - 2*player.radius){ //Choca en el borde inferior
+        //Movimiento en el eje Y
+        if (player.y + player.velY > h - 2*player.radius){ //Choca en el borde inferior
             inputStates.down = false;
         }
-        else if(player.y + player.velY == 0){ //Choca en el borde superior
+        else if (player.y + player.velY == 0){ //Choca en el borde superior
             inputStates.up = false;
         }
-        else{
+        else {
             player.y = player.y + player.velY;
         }
 
@@ -288,7 +327,7 @@ var GF = function(){
 		// dentro del código implementado en el test7:
 		// tras actualizar this.x  y  this.y... 
 		// check for collisions with other tiles (pellets, etc)
-		 thisLevel.checkIfHitSomething(this.x, this.y, this.nearestRow, this.nearestCol);
+		thisLevel.checkIfHitSomething(this.x, this.y, this.nearestRow, this.nearestCol);
 		
 		// test11
 		// Tu código aquí
@@ -471,7 +510,7 @@ var GF = function(){
 
 		// A partir del test2 deberás borrar lo implementado en el test1
 		
-    		// >=test2
+		// >=test2
 		// main function, called each frame 
 		measureFPS(time);
      
