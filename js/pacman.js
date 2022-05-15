@@ -318,7 +318,12 @@ var GF = function(){
 		// >=test11
 		this.checkIfHit = function(playerX, playerY, x, y, holgura){
 			// Test11
-			// Tu código aquí	
+			// Tu código aquí
+			if ((Math.abs(playerX - x) > holgura) || (Math.abs(playerY - y) > holgura) ){
+				return false;
+			}
+			return true;
+
 		};
 
 		// >=test8
@@ -490,19 +495,28 @@ var GF = function(){
 		}
 
 		thisLevel.checkIfHitSomething(this.x, this.y, this.nearestRow, this.nearestCol);
-		
+
 		// test11
 		// Tu código aquí
 		// check for collisions with the ghosts
+
+		for (let i = 0; i <numGhosts; i++){
+			if (thisLevel.checkIfHit(player.x, player.y, ghosts[i].x, ghosts[i].y, thisGame.TILE_WIDTH/2)){
+				console.log("Choque entre fantasma y pacman");
+
+				// test13
+				// Tu código aquí
+				// Si chocamos contra un fantasma y su estado es Ghost.VULNERABLE
+				// cambiar velocidad del fantasma y pasarlo a modo Ghost.SPECTACLES
+
+				// test14
+				// Tu código aquí.
+				// Si chocamos contra un fantasma cuando éste esta en estado Ghost.NORMAL --> cambiar el modo de juego a HIT_GHOST
+				
+			}
+		}
 		
-		// test13 
-		// Tu código aquí 
-		// Si chocamos contra un fantasma y su estado es Ghost.VULNERABLE
-		// cambiar velocidad del fantasma y pasarlo a modo Ghost.SPECTACLES
-		
-		// test14 
-		// Tu código aquí. 
-		// Si chocamos contra un fantasma cuando éste esta en estado Ghost.NORMAL --> cambiar el modo de juego a HIT_GHOST
+
 
 	};
 	
