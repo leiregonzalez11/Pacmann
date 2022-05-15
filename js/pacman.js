@@ -61,16 +61,46 @@ var GF = function(){
 		this.homeY = 0;
 
 		this.draw = function(){
-			// test10
-			// Tu código aquí
-			// Pintar cuerpo de fantasma	
-			// Pintar ojos
 
+			// test10
+			// Pintar cuerpo de fantasma
+			// Tu código aquí
+
+			this.ctx.beginPath();
 			this.ctx.moveTo(this.x,this.y+TILE_HEIGHT);
 			this.ctx.quadraticCurveTo(this.x+(TILE_WIDTH/2),this.y/1.05,this.x+TILE_WIDTH,this.y+TILE_HEIGHT);
-			this.ctx.fillStyle = ghostcolor[this.id];
+
+			// test12
+			// Tu código aquí
+			// Asegúrate de pintar el fantasma de un color u otro dependiendo del estado del fantasma y de thisGame.ghostTimer
+			// siguiendo el enunciado
+
+			if (this.state == Ghost.NORMAL){
+				this.ctx.fillStyle = ghostcolor[this.id];
+			}
+
+			else if(this.state == Ghost.VULNERABLE) {
+				if(thisGame.ghostTimer > 100){
+					this.ctx.fillStyle = ghostcolor[4];
+				}
+				else {
+					if(thisGame.ghostTimer % 2 == 0){
+						this.ctx.fillStyle = ghostcolor[5];
+						this.ctx.fill();
+					}
+					else{
+						this.ctx.fillStyle = ghostcolor[4];
+						this.ctx.fill();
+					}
+				}
+			}
+
 			this.ctx.closePath();
 			this.ctx.fill();
+
+			// test10
+			// Tu código aquí
+			// Pintar ojos
 
 			this.ctx.beginPath();
 			this.ctx.fillStyle = '#fff';
@@ -80,12 +110,6 @@ var GF = function(){
 			this.ctx.beginPath();
 			this.ctx.arc(this.x+(3*TILE_WIDTH/4),this.y+(TILE_WIDTH/2),3,0,2*Math.PI,true);
 			this.ctx.fill();
-
-
-			// test12 
-			// Tu código aquí
-			// Asegúrate de pintar el fantasma de un color u otro dependiendo del estado del fantasma y de thisGame.ghostTimer
-			// siguiendo el enunciado
 
 			// test13 
 			// Tu código aquí
@@ -384,6 +408,16 @@ var GF = function(){
 			// Gestiona la recogida de píldoras de poder
 			// (cambia el estado de los fantasmas)
 
+			if(baldosa == tileID['pellet-power']){ // Pildora de poder
+				this.setMapTile(fila, columna, 0); //Cambiamos el tipo de baldosa
+				this.pellets--; //Restamos 1 al nº de pildoras que quedan por recoger
+				thisGame.ghostTimer = 360;  // Inicializamos el valor de ghostTimer a 360 (6 seg. aprox.)
+				for (let i = 0; i<numGhosts; i++){ //Cambiamos el estado de los fantasmas
+					ghosts[i].state = Ghost.VULNERABLE;
+				}
+
+			}
+
 		};
 
 	}; // end Level 
@@ -454,45 +488,28 @@ var GF = function(){
 
 		//test 7
 
-		/*if(player.x > w - player.radius){
+		if(player.x + player.velX > w - 2 * player.radius){ //Choca en el borde derecho
 			inputStates.right=false;
 		}
-		else if(player.x + player.velX == 0){
+		else if(player.x + player.velX == 0){ //Choca en el borde izquierdo
 			inputStates.left=false;
 		}
-		else if(player.y > h - player.radius){
-			inputStates.down=false;
+		else if(player.y + player.velY > h - 2*player.radius){ //Choca en el borde inferior
+			inputStates.down = false;
 		}
-		else if(player.y + player.velY == 0){
-			inputStates.up=false;
+		else if(player.y + player.velY == 0){ //Choca en el borde superior
+			inputStates.up = false;
 		}
 		else{
 			player.y = player.y + player.velY;
 			player.x = player.x + player.velX;
-		}*/
+		}
 
 		// >=test8:
 		// introduce esta instrucción
 		// dentro del código implementado en el test7:
 		// tras actualizar this.x  y  this.y... 
 		// check for collisions with other tiles (pellets, etc)
-
-		if(player.x + player.velX > w- player.radius){
-			inputStates.right=false;
-		}
-		else if(player.x == 0){
-			inputStates.left=false;
-		}
-		else if(player.y + player.velY > h - player.radius){
-			inputStates.down=false;
-		}
-		else if(player.y == 0){
-			inputStates.up=false;
-		}
-		else{
-			player.y = player.y + player.velY;
-			player.x = player.x + player.velX;
-		}
 
 		thisLevel.checkIfHitSomething(this.x, this.y, this.nearestRow, this.nearestCol);
 
@@ -512,7 +529,7 @@ var GF = function(){
 				// test14
 				// Tu código aquí.
 				// Si chocamos contra un fantasma cuando éste esta en estado Ghost.NORMAL --> cambiar el modo de juego a HIT_GHOST
-				
+
 			}
 		}
 		
@@ -687,6 +704,13 @@ var GF = function(){
 		// test12
 		// Tu código aquí
         	// Actualizar thisGame.ghostTimer (y el estado de los fantasmas, tal y como se especifica en el enunciado)
+
+		if (thisGame.ghostTimer == 0){
+			for(let  i=0; i < numGhosts; i++){
+				ghosts[i].state=Ghost.NORMAL;
+			}
+		}
+		thisGame.ghostTimer--;
 
 		// test14
 		// Tu código aquí
