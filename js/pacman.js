@@ -6,6 +6,10 @@ var w = canvas.width;
 var h = canvas.height;
 
 
+Math.trunc = Math.trunc || function(x) {
+	return x - x % 1;
+}
+
 // >=test1
 // GAME FRAMEWORK 
 var GF = function(){
@@ -107,7 +111,7 @@ var GF = function(){
 		this.setMapTile = function(row, col, newValue){
 			// test5
 			// Tu código aquí
-            if(newValue == 2 || newValue == 3){
+            if(newValue == 2 || newValue == 3){ //Pildora normal o de poder (blanca o roja)
                 this.pellets++;
             }
             this.map[(row * this.lvlWidth) + col] = newValue;
@@ -134,13 +138,18 @@ var GF = function(){
             $.ajaxSetup({async:false});
 
             $.get("../res/levels/1.txt", (data) => {
-                let part = data.split("#");
+                let partes = data.split("#");
 
-                let valores = part[1].split(" ");
+				//Ancho
+                let valores = partes[1].split(" ");
                 this.lvlWidth = valores[2];
-                valores = part[2].split(" ");
+
+				//Altura
+                valores = partes[2].split(" ");
                 this.lvlHeight = valores[2];
-                valores = part[3].split("\n");
+
+				//Valores
+                valores = partes[3].split("\n");
                 let filas = valores.slice(1, valores.length - 1);
 
                 $.each(filas, (n, elem1) => {
@@ -167,49 +176,45 @@ var GF = function(){
 				'door-h': 20,
 				'door-v': 21,
 				'pellet-power': 3
-
 			};
 
 			// test6
 			// Tu código aquí
+			for (let fila=0; fila<=thisGame.screenTileSize[0];j++){
+				for (let col=0; col<=thisGame.screenTileSize[1]-1;i++){
 
-			for (let j=0; j<=thisGame.screenTileSize[0];j++){
-				for (let i=0; i<=thisGame.screenTileSize[1]-1;i++){
-
-					let baldosa = this.getMapTile(j, i);
+					let baldosa = this.getMapTile(fila, col);
 					let tipobaldosa = parseInt(baldosa);
 
-					if(tipobaldosa >= 100 && tipobaldosa <= 199){ //Borde
-						ctx.fillStyle = "blue";
-						ctx.fillRect(i*TILE_WIDTH, j*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
-						ctx.stroke();
-					}
-					else if(tipobaldosa == 4){ //Pacman
-						player.x = i*TILE_WIDTH;
-						player.y = j*TILE_WIDTH;
-					}
-					else if(tipobaldosa >= 10 && tipobaldosa <= 13){ //Camino
-						ctx.fillStyle = "black";
-						ctx.fillRect(i*TILE_WIDTH, j*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
-						ctx.stroke();
-					}
-
-					else if( tipobaldosa == 2){ //Circulo blanco
+					if( tipobaldosa == 2){ //Pildora -> circulo blanco
 						ctx.beginPath();
 						ctx.fillStyle = "white";
-						ctx.arc(i*TILE_WIDTH+12, j*TILE_HEIGHT+12, 5, 0, 2 * Math.PI, true);
+						ctx.arc(col*TILE_WIDTH+12, fila*TILE_HEIGHT+12, 5, 0, 2 * Math.PI, true);
 						ctx.fill();
 						ctx.stroke();
 						ctx.closePath();
-
 					}
-					else if(tipobaldosa == 3){ //Circulo rojo
+					else if(tipobaldosa == 3){ //Pildora de poder -> circulo rojo
 						ctx.beginPath();
 						ctx.fillStyle = "red";
-						ctx.arc(i*TILE_WIDTH+12, j*TILE_HEIGHT+12, 5, 0, 2 * Math.PI, true);
+						ctx.arc(col*TILE_WIDTH+12, fila*TILE_HEIGHT+12, 5, 0, 2 * Math.PI, true);
 						ctx.fill();
 						ctx.stroke();
 						ctx.closePath();
+					}
+					else if(tipobaldosa == 4){ //Pacman
+						player.x = col*TILE_WIDTH;
+						player.y = fila*TILE_WIDTH;
+					}
+					else if(tipobaldosa >= 10 && tipobaldosa <= 13){ //Fantasmas
+						ctx.fillStyle = "black";
+						ctx.fillRect(col*TILE_WIDTH, fila*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+						ctx.stroke();
+					}
+					else if(tipobaldosa >= 100 && tipobaldosa <= 199){ //Pared
+						ctx.fillStyle = "blue";
+						ctx.fillRect(col*TILE_WIDTH, fila*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+						ctx.stroke();
 					}
 				}
 			}
@@ -221,12 +226,9 @@ var GF = function(){
 			// Tu código aquí
 
 			let baldosa = this.getMapTile(row, col);
-			var tipoBaldosa = parseInt(baldosa);
+			let tipoBaldosa = parseInt(baldosa);
 
-			if (tipoBaldosa >= 100 && tipoBaldosa <= 199){
-				return true;
-			}
-			return false;
+			return(100 <= tipoBaldosa && tipoBaldosa<=199);
 		};
 
 		// >=test7
@@ -236,13 +238,12 @@ var GF = function(){
 			// Determinar si el jugador va a moverse a una fila,columna que tiene pared 
 			// Hacer uso de isWall
 
-			if ((possiblePlayerX % 12 ==0) || ( possiblePlayerY % 12 == 0)){
-				let row = Math.trunc(((possiblePlayerY)/24));
-				let col = Math.trunc(((possiblePlayerX)/24));
+			if ((possiblePlayerX % (thisGame.TILE_WIDTH/2) ==0) || ( possiblePlayerY % (thisGame.TILE_HEIGHT/2) == 0)){
+				let row = Math.trunc(((possiblePlayerY)/thisGame.TILE_HEIGHT));
+				let col = Math.trunc(((possiblePlayerX)/thisGame.TILE_WIDTH));
 				return this.isWall(row,col);
 			}
-
-			return true;
+			else{ return true;}
 
 		};
 		
@@ -255,7 +256,7 @@ var GF = function(){
 		// >=test8
 		this.checkIfHitSomething = function(playerX, playerY, row, col){
 			var tileID = {
-	    			'door-h' : 20,
+				'door-h' : 20,
 				'door-v' : 21,
 				'pellet-power' : 3,
 				'pellet': 2
@@ -264,7 +265,16 @@ var GF = function(){
 			// test8
 			// Tu código aquí
 			// Gestiona la recogida de píldoras
-			
+
+			let fila = Math.trunc(((playerY)/thisGame.TILE_HEIGHT));
+			let columna = Math.trunc(((playerX)/thisGame.TILE_WIDTH));
+			let baldosa = this.getMapTile(fila, columna);
+
+			if(baldosa == 2){
+				this.setMapTile(fila, columna, 0); //Cambiamos el tipo de baldosa
+				this.pellets--; //Restamos 1 al nº de pildoras que quedan por recoger
+			}
+
 			// test9
 			// Tu código aquí
 			// Gestiona las puertas teletransportadoras
@@ -342,6 +352,28 @@ var GF = function(){
 
 		//test 7
 
+		/*if(player.x > w - player.radius){
+			inputStates.right=false;
+		}
+		else if(player.x + player.velX == 0){
+			inputStates.left=false;
+		}
+		else if(player.y > h - player.radius){
+			inputStates.down=false;
+		}
+		else if(player.y + player.velY == 0){
+			inputStates.up=false;
+		}
+		else{
+			player.y = player.y + player.velY;
+			player.x = player.x + player.velX;
+		}*/
+
+		// >=test8: introduce esta instrucción
+		// dentro del código implementado en el test7:
+		// tras actualizar this.x  y  this.y... 
+		// check for collisions with other tiles (pellets, etc)
+
 		if(player.x > w - player.radius){
 			inputStates.right=false;
 		}
@@ -357,15 +389,7 @@ var GF = function(){
 		else{
 			player.y = player.y + player.velY;
 			player.x = player.x + player.velX;
-
 		}
-
-		// >=test8: introduce esta instrucción
-		// dentro del código implementado en el test7:
-		// tras actualizar this.x  y  this.y... 
-		// check for collisions with other tiles (pellets, etc)
-
-
 
 		thisLevel.checkIfHitSomething(this.x, this.y, this.nearestRow, this.nearestCol);
 		
@@ -410,7 +434,7 @@ var GF = function(){
 		ctx.stroke();
 	};
     	
-    	// >=test5
+	// >=test5
 	var player = new Pacman();
 	
 	// >=test10
@@ -517,7 +541,7 @@ var GF = function(){
 		var TILE_WIDTH = thisGame.TILE_WIDTH;
 		var TILE_HEIGHT = thisGame.TILE_HEIGHT;
 
-		if((player.x % (TILE_WIDTH/2)) == 0 && !((player.x % TILE_WIDTH) == 0) && (player.y % (TILE_HEIGHT/2)) == 0 && !((player.y%TILE_WIDTH) == 0) ){
+		if((player.x % (TILE_WIDTH/2)) == 0 && ((player.x % TILE_WIDTH) != 0) && (player.y % (TILE_HEIGHT/2)) == 0 && ((player.y%TILE_WIDTH) != 0) && !inputStates.space ){
 
 			if(inputStates.right && !thisLevel.checkIfHitWall(player.x + 4 * player.speed, player.y,0,0)){ //Pulsa hacia derecha y no toca borde
 				player.velX = player.speed;
@@ -526,17 +550,14 @@ var GF = function(){
 			else if(inputStates.left && !thisLevel.checkIfHitWall(player.x - 5*player.speed, player.y,0,0)){ //Pulsa hacia izquierda y no toca borde
 				player.velX = -player.speed;
 				player.velY = 0;
-
 			}
 			else if(inputStates.up && !thisLevel.checkIfHitWall(player.x, player.y-5*player.speed,0,0)){ //Pulsa hacia arriba y no toca borde
 				player.velY = -player.speed;
 				player.velX = 0;
-
 			}
 			else if(inputStates.down && !thisLevel.checkIfHitWall(player.x, player.y+4*player.speed,0,0)){ //Pulsa hacia abajo y no toca borde
 				player.velY = player.speed;
 				player.velX = 0;
-
 			}
 			else if(inputStates.space){ //Pulsa espacio
 				console.log("Ha pulsado espacio");
