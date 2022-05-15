@@ -178,6 +178,12 @@ var GF = function(){
 				'pellet-power': 3
 			};
 
+			if(this.powerPelletBlinkTimer < 60){
+				this.powerPelletBlinkTimer++;
+			} else{
+				this.powerPelletBlinkTimer=0;
+			}
+
 			// test6
 			// Tu código aquí
 			for (let fila=0; fila<=thisGame.screenTileSize[0];j++){
@@ -228,7 +234,7 @@ var GF = function(){
 			let baldosa = this.getMapTile(row, col);
 			let tipoBaldosa = parseInt(baldosa);
 
-			return(100 <= tipoBaldosa && tipoBaldosa<=199);
+			return(100 <= tipoBaldosa && tipoBaldosa <= 199);
 		};
 
 		// >=test7
@@ -255,6 +261,7 @@ var GF = function(){
 
 		// >=test8
 		this.checkIfHitSomething = function(playerX, playerY, row, col){
+
 			var tileID = {
 				'door-h' : 20,
 				'door-v' : 21,
@@ -270,6 +277,7 @@ var GF = function(){
 			let columna = Math.trunc(((playerX)/thisGame.TILE_WIDTH));
 			let baldosa = this.getMapTile(fila, columna);
 
+			//if (baldosa == tileID['pellet']){
 			if(baldosa == 2){
 				this.setMapTile(fila, columna, 0); //Cambiamos el tipo de baldosa
 				this.pellets--; //Restamos 1 al nº de pildoras que quedan por recoger
@@ -278,6 +286,24 @@ var GF = function(){
 			// test9
 			// Tu código aquí
 			// Gestiona las puertas teletransportadoras
+
+			//if (baldosa == tileID['door-h']){
+			if(baldosa == 20){ // Puerta horizontal
+				if(col==0){
+					player.x = (thisGame.screenTileSize[1]-1) * thisGame.TILE_WIDTH - (thisGame.TILE_WIDTH/2);
+				} else {
+					player.x = thisGame.TILE_WIDTH + (thisGame.TILE_WIDTH/2);
+				}
+			}
+
+			//if (baldosa == tileID['door-v']){
+			if(baldosa == 21){ // Puerta vertical
+				if(row == 0){
+					player.y = thisGame.screenTileSize[0] * thisGame.TILE_HEIGHT - (thisGame.TILE_HEIGHT/2);
+				} else {
+					player.y = thisGame.TILE_HEIGHT + (thisGame.TILE_HEIGHT/2);
+				}
+			}
 			
 			// test12
 			// Tu código aquí
@@ -369,7 +395,8 @@ var GF = function(){
 			player.x = player.x + player.velX;
 		}*/
 
-		// >=test8: introduce esta instrucción
+		// >=test8:
+		// introduce esta instrucción
 		// dentro del código implementado en el test7:
 		// tras actualizar this.x  y  this.y... 
 		// check for collisions with other tiles (pellets, etc)
