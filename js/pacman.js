@@ -10,6 +10,9 @@ Math.trunc = Math.trunc || function(x) {
 	return x - x % 1;
 }
 
+/**************************************************/
+/*                GAME FRAMEWORK				  */
+/**************************************************/
 // >=test1
 // GAME FRAMEWORK 
 var GF = function(){
@@ -41,7 +44,11 @@ var GF = function(){
 	// >=test10
 	// hold ghost objects
 	var ghosts = {};
-	
+
+	/**************************************************/
+	/*                     GHOSTS                     */
+	/**************************************************/
+
 	// >=test10
 	var Ghost = function(id, ctx){
 
@@ -192,13 +199,18 @@ var GF = function(){
 
 		};
 
-	}; // fin clase Ghost
+	}; //FIN CLASE GHOST
 	
 	// >=test12
 	// static variables
 	Ghost.NORMAL = 1;
 	Ghost.VULNERABLE = 2;
 	Ghost.SPECTACLES = 3;
+
+
+	/**************************************************/
+	/*                      LEVEL                     */
+	/**************************************************/
 
 	// >=test5
 	var Level = function(ctx) {
@@ -434,8 +446,13 @@ var GF = function(){
 
 		};
 
-	}; // end Level 
-	
+	}; //FIN CLASE LEVEL
+
+
+	/**************************************************/
+	/*                     PACMAN                     */
+	/**************************************************/
+
 	// >=test2
 	var Pacman = function() {
 		this.radius = 15;
@@ -726,8 +743,8 @@ var GF = function(){
 	// >=test12
 	var updateTimers = function(){
 		// test12
+        // Actualizar thisGame.ghostTimer (y el estado de los fantasmas, tal y como se especifica en el enunciado)
 		// Tu código aquí
-        	// Actualizar thisGame.ghostTimer (y el estado de los fantasmas, tal y como se especifica en el enunciado)
 
 		if (thisGame.ghostTimer == 0){
 			for(let  i=0; i < numGhosts; i++){
@@ -788,14 +805,14 @@ var GF = function(){
 		player.move();
 
 		// test14
-		// Tu código aquí
 		// en modo HIT_GHOST
 		// seguir el enunciado...
-	
-		// test14	
 		// Tu código aquí
+	
+		// test14
 		// en modo WAIT_TO_START
 		// seguir el enunciado...
+		// Tu código aquí
 	
 
 		// >=test2
