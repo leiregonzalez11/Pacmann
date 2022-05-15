@@ -20,11 +20,11 @@ var GF = function(){
 	var lastTime;
 	var fpsContainer;
 	var fps;
-    var dirDerecha = true;
+    //var dirDerecha = true; //test3
  	
  	// >=test4
 	//  variable global temporalmente para poder testear el ejercicio
-    inputStates = {left: false, right: false, up: false, down: false, space: false};
+	inputStates = {left:false, right:false, space:false,up:false, down:false};
 
 
 	// >=test10
@@ -64,7 +64,7 @@ var GF = function(){
 			// test10
 			// Tu código aquí
 			// Pintar cuerpo de fantasma	
-			// Pintar ojos 
+			// Pintar ojos
 	
 		
 			// test12 
@@ -81,6 +81,7 @@ var GF = function(){
 		this.move = function() {
 			// test10
 			// Tu código aquí
+
 
 		
 			// test13 
@@ -178,46 +179,44 @@ var GF = function(){
 				'pellet-power': 3
 			};
 
-			if(this.powerPelletBlinkTimer < 60){
-				this.powerPelletBlinkTimer++;
-			} else{
-				this.powerPelletBlinkTimer=0;
+			thisLevel.powerPelletBlinkTimer++;
+			if (thisLevel.powerPelletBlinkTimer == 60){
+				thisLevel.powerPelletBlinkTimer = 0;
 			}
 
 			// test6
 			// Tu código aquí
-			for (let fila=0; fila<=thisGame.screenTileSize[0];j++){
-				for (let col=0; col<=thisGame.screenTileSize[1]-1;i++){
+			for (let fila=0; fila <= thisGame.screenTileSize[0]; fila++){
+				for (let col=0; col <= thisGame.screenTileSize[1]-1; col++){
 
-					let baldosa = this.getMapTile(fila, col);
-					let tipobaldosa = parseInt(baldosa);
+					let b = this.getMapTile(fila, col);
+					let baldosa = parseInt(b);
 
-					if( tipobaldosa == 2){ //Pildora -> circulo blanco
+					if( baldosa == 2){ //Pildora -> circulo blanco
 						ctx.beginPath();
 						ctx.fillStyle = "white";
-						ctx.arc(col*TILE_WIDTH+12, fila*TILE_HEIGHT+12, 5, 0, 2 * Math.PI, true);
+						ctx.arc(col * TILE_WIDTH+ (TILE_WIDTH/2), fila*TILE_HEIGHT + (TILE_HEIGHT/2), 5, 0, 2 * Math.PI, true);
 						ctx.fill();
 						ctx.stroke();
 						ctx.closePath();
 					}
-					else if(tipobaldosa == 3){ //Pildora de poder -> circulo rojo
-						ctx.beginPath();
-						ctx.fillStyle = "red";
-						ctx.arc(col*TILE_WIDTH+12, fila*TILE_HEIGHT+12, 5, 0, 2 * Math.PI, true);
-						ctx.fill();
-						ctx.stroke();
-						ctx.closePath();
+					else if(baldosa == 3){ //Pildora de poder -> circulo rojo
+						if(this.powerPelletBlinkTimer < 30) {
+							ctx.beginPath();
+							ctx.fillStyle = "red";
+							ctx.arc(col * TILE_WIDTH + (TILE_WIDTH / 2), fila * TILE_HEIGHT + (TILE_HEIGHT / 2), 5, 0, 2 * Math.PI, true);
+							ctx.fill();
+							ctx.stroke();
+							ctx.closePath();
+						}
 					}
-					else if(tipobaldosa == 4){ //Pacman
-						player.x = col*TILE_WIDTH;
-						player.y = fila*TILE_WIDTH;
-					}
-					else if(tipobaldosa >= 10 && tipobaldosa <= 13){ //Fantasmas
+					/*else if(baldosa == 4 || baldosa == 0){ //Pacman o baldosa vacía}*/
+					else if(baldosa >= 10 && baldosa <= 13){ //Fantasmas
 						ctx.fillStyle = "black";
 						ctx.fillRect(col*TILE_WIDTH, fila*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
 						ctx.stroke();
 					}
-					else if(tipobaldosa >= 100 && tipobaldosa <= 199){ //Pared
+					else if(baldosa >= 100 && baldosa <= 199){ //Pared
 						ctx.fillStyle = "blue";
 						ctx.fillRect(col*TILE_WIDTH, fila*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
 						ctx.stroke();
@@ -231,10 +230,9 @@ var GF = function(){
 			// test7
 			// Tu código aquí
 
-			let baldosa = this.getMapTile(row, col);
-			let tipoBaldosa = parseInt(baldosa);
-
-			return(100 <= tipoBaldosa && tipoBaldosa <= 199);
+			let b = this.getMapTile(row, col);
+			let baldosa = parseInt(b);
+			return (100 <= baldosa && baldosa <= 199);
 		};
 
 		// >=test7
@@ -244,7 +242,7 @@ var GF = function(){
 			// Determinar si el jugador va a moverse a una fila,columna que tiene pared 
 			// Hacer uso de isWall
 
-			if ((possiblePlayerX % (thisGame.TILE_WIDTH/2) ==0) || ( possiblePlayerY % (thisGame.TILE_HEIGHT/2) == 0)){
+			if ((possiblePlayerX % (thisGame.TILE_WIDTH/2) ==0) || (possiblePlayerY % (thisGame.TILE_HEIGHT/2) == 0)){
 				let row = Math.trunc(((possiblePlayerY)/thisGame.TILE_HEIGHT));
 				let col = Math.trunc(((possiblePlayerX)/thisGame.TILE_WIDTH));
 				return this.isWall(row,col);
@@ -277,8 +275,7 @@ var GF = function(){
 			let columna = Math.trunc(((playerX)/thisGame.TILE_WIDTH));
 			let baldosa = this.getMapTile(fila, columna);
 
-			//if (baldosa == tileID['pellet']){
-			if(baldosa == 2){
+			if (baldosa == tileID.pellet){
 				this.setMapTile(fila, columna, 0); //Cambiamos el tipo de baldosa
 				this.pellets--; //Restamos 1 al nº de pildoras que quedan por recoger
 			}
@@ -288,20 +285,30 @@ var GF = function(){
 			// Gestiona las puertas teletransportadoras
 
 			//if (baldosa == tileID['door-h']){
-			if(baldosa == 20){ // Puerta horizontal
-				if(col==0){
-					player.x = (thisGame.screenTileSize[1]-1) * thisGame.TILE_WIDTH - (thisGame.TILE_WIDTH/2);
-				} else {
-					player.x = thisGame.TILE_WIDTH + (thisGame.TILE_WIDTH/2);
+			if(baldosa == tileID['door-h']){ // Puerta horizontal
+				for(let j=0; j < thisLevel.lvlWidth; j++){
+					if(j != columna && this.getMapTile(fila, j) == tileID['door-h']){
+						player.x = j*thisGame.TILE_WIDTH;
+						if(player.velX > 0){
+							player.x = player.x + thisGame.TILE_WIDTH;
+						}else{
+							player.x = player.x - thisGame.TILE_WIDTH;
+						}
+					}
 				}
 			}
 
 			//if (baldosa == tileID['door-v']){
-			if(baldosa == 21){ // Puerta vertical
-				if(row == 0){
-					player.y = thisGame.screenTileSize[0] * thisGame.TILE_HEIGHT - (thisGame.TILE_HEIGHT/2);
-				} else {
-					player.y = thisGame.TILE_HEIGHT + (thisGame.TILE_HEIGHT/2);
+			if(baldosa == tileID['door-v']){ // Puerta vertical
+				for(let i = 0; i < thisLevel.lvlHeight;i++){
+					if(i != fila && this.getMapTile(i, columna) == tileID['door-v']){
+						player.y = i * thisGame.TILE_WIDTH;
+						if(player.velY > 0){
+							player.y = player.y + thisGame.TILE_WIDTH;
+						}else{
+							player.y = player.y - thisGame.TILE_WIDTH;
+						}
+					}
 				}
 			}
 			
@@ -317,11 +324,13 @@ var GF = function(){
 	// >=test2
 	var Pacman = function() {
 		this.radius = 15;
-		this.posX = 0;
-		this.posY = 0;
+		this.x = 0;
+		this.y = 0;
 		this.speed = 5;
 		this.angle1 = 0.25;
 		this.angle2 = 1.75;
+		this.velY = 0;
+		this.velX = this.speed;
 	};
 	
 	// >=test3
@@ -401,16 +410,16 @@ var GF = function(){
 		// tras actualizar this.x  y  this.y... 
 		// check for collisions with other tiles (pellets, etc)
 
-		if(player.x > w - player.radius){
+		if(player.x + player.velX > w- player.radius){
 			inputStates.right=false;
 		}
-		else if(player.x + player.velX == 0){
+		else if(player.x == 0){
 			inputStates.left=false;
 		}
-		else if(player.y > h - player.radius){
+		else if(player.y + player.velY > h - player.radius){
 			inputStates.down=false;
 		}
-		else if(player.y + player.velY == 0){
+		else if(player.y == 0){
 			inputStates.up=false;
 		}
 		else{
@@ -587,7 +596,7 @@ var GF = function(){
 				player.velX = 0;
 			}
 			else if(inputStates.space){ //Pulsa espacio
-				console.log("Ha pulsado espacio");
+				//console.log("Ha pulsado espacio");
 			}
 			else{ //Sin movimiento ni keydown
 				player.velX=0;
@@ -717,7 +726,6 @@ var GF = function(){
 				inputStates.down=false;
 				inputStates.space=false;
             }
-
 			else if(tecla == 40){ //Abajo
 				inputStates.down=true;
 				inputStates.up=false;
@@ -725,8 +733,7 @@ var GF = function(){
 				inputStates.left=false;
 				inputStates.space=false;
             }
-
-			else if (tecla == 8){ //Espacio
+			else if (tecla == 32){ //Espacio
 				inputStates.space=true;
 				inputStates.right=false;
 				inputStates.left=false;
@@ -752,12 +759,11 @@ var GF = function(){
 		let TILE_WIDTH = thisGame.TILE_WIDTH;
 		let TILE_HEIGHT = thisGame.TILE_HEIGHT;
 
-		for (let j = 0; j <= this.screenTileSize[0]; j++){ //Fila
-			for (let i = 0; i <= this.screenTileSize[1] - 1; i++){ //Columna
-				let baldosa = thisLevel.getMapTile(j, i);
-				var tipoBaldosa = parseInt(baldosa);
-
-				if (tipoBaldosa == 4){ //Tipo baldosa = Pacman
+		for (let j = 0; j <= thisGame.screenTileSize[0]; j++){ //Fila
+			for (let i = 0; i <= thisGame.screenTileSize[1] - 1; i++){ //Columna
+				let b = thisLevel.getMapTile(j, i);
+				const baldosa = parseInt(b);
+				if (baldosa == 4){ //Tipo baldosa = Pacman
 					player.x = i * TILE_WIDTH + (TILE_WIDTH/2);
 					player.y = j * TILE_HEIGHT + (TILE_HEIGHT/2);
 				}
