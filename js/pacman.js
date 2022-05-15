@@ -62,41 +62,48 @@ var GF = function(){
 
 		this.draw = function(){
 
-			// test10
-			// Pintar cuerpo de fantasma
+			// test13
 			// Tu código aquí
+			// El cuerpo del fantasma sólo debe dibujarse cuando el estado del mismo es distinto a Ghost.SPECTACLES
 
-			this.ctx.beginPath();
-			this.ctx.moveTo(this.x,this.y+TILE_HEIGHT);
-			this.ctx.quadraticCurveTo(this.x+(TILE_WIDTH/2),this.y/1.05,this.x+TILE_WIDTH,this.y+TILE_HEIGHT);
+			if (this.state != Ghost.SPECTACLES){
 
-			// test12
-			// Tu código aquí
-			// Asegúrate de pintar el fantasma de un color u otro dependiendo del estado del fantasma y de thisGame.ghostTimer
-			// siguiendo el enunciado
+				// test10
+				// Pintar cuerpo de fantasma
+				// Tu código aquí
 
-			if (this.state == Ghost.NORMAL){
-				this.ctx.fillStyle = ghostcolor[this.id];
-			}
+				this.ctx.beginPath();
+				this.ctx.moveTo(this.x,this.y+TILE_HEIGHT);
+				this.ctx.quadraticCurveTo(this.x+(TILE_WIDTH/2),this.y/1.05,this.x+TILE_WIDTH,this.y+TILE_HEIGHT);
 
-			else if(this.state == Ghost.VULNERABLE) {
-				if(thisGame.ghostTimer > 100){
-					this.ctx.fillStyle = ghostcolor[4];
+				// test12
+				// Tu código aquí
+				// Asegúrate de pintar el fantasma de un color u otro dependiendo del estado del fantasma y de thisGame.ghostTimer
+				// siguiendo el enunciado
+
+				if (this.state == Ghost.NORMAL){
+					this.ctx.fillStyle = ghostcolor[this.id];
 				}
-				else {
-					if(thisGame.ghostTimer % 2 == 0){
-						this.ctx.fillStyle = ghostcolor[5];
-						this.ctx.fill();
-					}
-					else{
+
+				else if(this.state == Ghost.VULNERABLE) {
+					if(thisGame.ghostTimer > 100){
 						this.ctx.fillStyle = ghostcolor[4];
-						this.ctx.fill();
+					}
+					else {
+						if(thisGame.ghostTimer % 2 == 0){
+							this.ctx.fillStyle = ghostcolor[5];
+							this.ctx.fill();
+						}
+						else{
+							this.ctx.fillStyle = ghostcolor[4];
+							this.ctx.fill();
+						}
 					}
 				}
-			}
 
-			this.ctx.closePath();
-			this.ctx.fill();
+				this.ctx.closePath();
+				this.ctx.fill();
+			}
 
 			// test10
 			// Tu código aquí
@@ -111,71 +118,78 @@ var GF = function(){
 			this.ctx.arc(this.x+(3*TILE_WIDTH/4),this.y+(TILE_WIDTH/2),3,0,2*Math.PI,true);
 			this.ctx.fill();
 
-			// test13 
-			// Tu código aquí
-			// El cuerpo del fantasma sólo debe dibujarse cuando el estado del mismo es distinto a Ghost.SPECTACLES
 
 		}; // draw
 		
 		this.move = function() {
-			// test10
-			// Tu código aquí
-
-			if(this.x % thisGame.TILE_WIDTH != 0  &&  this.x % (thisGame.TILE_WIDTH/2)==0  &&  this.y % thisGame.TILE_HEIGHT !=0  &&  this.y % (thisGame.TILE_HEIGHT/2) ==0){
-				const filaGhost = Math.trunc(((this.y) / thisGame.TILE_WIDTH));
-				const colGhost = Math.trunc(((this.x) / TILE_HEIGHT));
-
-				let posiblesMovimientos = [];
-
-				if(!thisLevel.isWall(filaGhost, colGhost-1)){ //Si no hay pared a la izquierda
-					posiblesMovimientos.push("izquierda");
-				}
-				else if(!thisLevel.isWall(filaGhost, colGhost+1)){//Si no hay pared a la derecha
-					posiblesMovimientos.push("derecha");
-				}
-				else if(!thisLevel.isWall(filaGhost-1, colGhost)){ //Si no hay pared arriba
-					posiblesMovimientos.push("arriba");
-				}
-				else if(!thisLevel.isWall(filaGhost+1, colGhost)){ //Si no hay pared arriba
-					posiblesMovimientos.push("abajo");
-				}
-
-				//Si hay cruce o va a chocar
-				if(posiblesMovimientos.length >= 3  ||  this.velX < 0 && thisLevel.isWall(filaGhost, colGhost - 1)  ||
-					this.velX > 0 && thisLevel.isWall(filaGhost, colGhost + 1)  ||
-					this.velY < 0 && thisLevel.isWall(filaGhost - 1, colGhost)  ||
-					this.velY > 0 && thisLevel.isWall(filaGhost + 1, colGhost)  ||
-					(this.velX == 0 && this.velY == 0)){
-
-					//Elegimos una dirección al azar y actualizamos velX y velY según la dirección
-					let dir = posiblesMovimientos[Math.round(Math.random() * (posiblesMovimientos.length - 1))];
-
-					if(dir == "izquierda"){
-						this.velX=-this.speed;
-						this.velY=0;
-					}
-					else if(dir == "derecha"){
-						this.velX=this.speed;
-						this.velY=0;
-					}
-					else if(dir == "arriba"){
-						this.velX=0;
-						this.velY=-this.speed;
-					}
-					else{
-						this.velX=0;
-						this.velY=this.speed;
-					}
-				}
-			}
-
-			this.x = this.x + this.velX;
-			this.y = this.y + this.velY;
 
 			// test13
 			// Tu código aquí
 			// Si el estado del fantasma es Ghost.SPECTACLES
 			// Mover el fantasma lo más recto posible hacia la casilla de salida
+
+			if (this.state == Ghost.SPECTACLES){
+
+				if(this.x < this.homeX) this.x += this.velX;
+				if(this.x > this.homeX) this.x -= this.velX;
+				if(this.y < this.homeY) this.y += this.velY;
+				if(this.y > this.homeY) this.y -= this.velY;
+
+				if(this.x == this.homeX && this.y == this.homeY) {
+					this.state = Ghost.NORMAL;
+				}
+			}
+			else {
+				// test10
+				// Tu código aquí
+
+				if (this.x % thisGame.TILE_WIDTH != 0 && this.x % (thisGame.TILE_WIDTH / 2) == 0 && this.y % thisGame.TILE_HEIGHT != 0 && this.y % (thisGame.TILE_HEIGHT / 2) == 0) {
+					const filaGhost = Math.trunc(((this.y) / thisGame.TILE_WIDTH));
+					const colGhost = Math.trunc(((this.x) / TILE_HEIGHT));
+
+					let posiblesMovimientos = [];
+
+					if (!thisLevel.isWall(filaGhost, colGhost - 1)) { //Si no hay pared a la izquierda
+						posiblesMovimientos.push("izquierda");
+					} else if (!thisLevel.isWall(filaGhost, colGhost + 1)) {//Si no hay pared a la derecha
+						posiblesMovimientos.push("derecha");
+					} else if (!thisLevel.isWall(filaGhost - 1, colGhost)) { //Si no hay pared arriba
+						posiblesMovimientos.push("arriba");
+					} else if (!thisLevel.isWall(filaGhost + 1, colGhost)) { //Si no hay pared arriba
+						posiblesMovimientos.push("abajo");
+					}
+
+					//Si hay cruce o va a chocar
+					if (posiblesMovimientos.length >= 3 || this.velX < 0 && thisLevel.isWall(filaGhost, colGhost - 1) ||
+						this.velX > 0 && thisLevel.isWall(filaGhost, colGhost + 1) ||
+						this.velY < 0 && thisLevel.isWall(filaGhost - 1, colGhost) ||
+						this.velY > 0 && thisLevel.isWall(filaGhost + 1, colGhost) ||
+						(this.velX == 0 && this.velY == 0)) {
+
+						//Elegimos una dirección al azar y actualizamos velX y velY según la dirección
+						let dir = posiblesMovimientos[Math.round(Math.random() * (posiblesMovimientos.length - 1))];
+
+						if (dir == "izquierda") {
+							this.velX = -this.speed;
+							this.velY = 0;
+						} else if (dir == "derecha") {
+							this.velX = this.speed;
+							this.velY = 0;
+						} else if (dir == "arriba") {
+							this.velX = 0;
+							this.velY = -this.speed;
+						} else {
+							this.velX = 0;
+							this.velY = this.speed;
+						}
+					}
+				}
+
+				this.x = this.x + this.velX;
+				this.y = this.y + this.velY;
+			}
+
+
 		};
 
 	}; // fin clase Ghost
@@ -526,9 +540,19 @@ var GF = function(){
 				// Si chocamos contra un fantasma y su estado es Ghost.VULNERABLE
 				// cambiar velocidad del fantasma y pasarlo a modo Ghost.SPECTACLES
 
+				if (ghosts[i].state == Ghost.VULNERABLE){
+					ghosts[i].velX = -ghosts[i].speed;
+					ghosts[i].velY = -ghosts[i].speed;
+					ghosts[i].state = Ghost.SPECTACLES;
+				}
+
 				// test14
 				// Tu código aquí.
 				// Si chocamos contra un fantasma cuando éste esta en estado Ghost.NORMAL --> cambiar el modo de juego a HIT_GHOST
+
+				else if (ghosts[i].state == Ghost.NORMAL){
+
+				}
 
 			}
 		}
