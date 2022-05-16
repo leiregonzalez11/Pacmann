@@ -57,9 +57,6 @@ var GF = function(){
 		this.velY = 0;
 		this.speed = 1;
 
-		this.nearestRow = 0;
-		this.nearestCol = 0;
-
 		this.ctx = ctx;
 
 		this.id = id;
@@ -597,9 +594,6 @@ var GF = function(){
 
 			}
 		}
-
-
-
 	};
 
 	// >=test2
@@ -1024,7 +1018,7 @@ var GF = function(){
 		inputStates.right=true;
 
 		// >=test14
-		//thisGame.setMode( thisGame.NORMAL);
+		thisGame.setMode( thisGame.NORMAL);
 	};
 
 	var loadAssets = function(){
