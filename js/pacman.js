@@ -111,7 +111,7 @@ var GF = function(){
 				}
 
 			} else{
-				this.ctx.fillStyle =  "black";
+				this.ctx.fillStyle =  "blue";
 				this.ctx.beginPath();
 				this.ctx.moveTo(this.x-11,this.y+11);
 				this.ctx.quadraticCurveTo(this.x,this.y-24,this.x+11,this.y+11);
@@ -210,18 +210,11 @@ var GF = function(){
 				// Si el estado del fantasma es Ghost.SPECTACLES
 			// Mover el fantasma lo más recto posible hacia la casilla de salida
 			else{
-				if(this.x<w/2){
-					this.x=this.x+this.velX;
-				}
-				else{
-					this.x=this.x-this.velX;
-				}
-				if(this.y>h/2){
-					this.y=this.y-this.velY;
-				}else{
-					this.y=this.y+this.velY;
-				}
-				if(this.x==this.homeX && this.y==this.homeY){
+				if(this.x < w/2){this.x = this.x + this.velX;}
+				else{this.x=this.x - this.velX;}
+				if(this.y>h/2){this.y=this.y-this.velY;}
+				else{ this.y=this.y+this.velY;}
+				if(this.x == this.homeX && this.y == this.homeY){
 					this.state=Ghost.NORMAL;
 				}
 			}
@@ -591,9 +584,9 @@ var GF = function(){
 				// Tu código aquí.
 				// Si chocamos contra un fantasma cuando éste esta en estado Ghost.NORMAL --> cambiar el modo de juego a HIT_GHOST
 
-				/*else if (ghosts[i].state == Ghost.NORMAL){
+				else if (ghosts[i].state == Ghost.NORMAL){
                     thisGame.setMode(thisGame.HIT_GHOST);
-                }*/
+                }
 
 			}
 		}
@@ -778,7 +771,7 @@ var GF = function(){
 		// test14
 		// Tu código aquí
 		// actualiza modeTimer...
-		//thisGame.modeTimer++;
+		thisGame.modeTimer++;
 	};
 
 	// >=test1
@@ -809,15 +802,61 @@ var GF = function(){
 		// main function, called each frame
 		measureFPS(time);
 
-		checkInputs();
-
+		// test14
 		// Tu código aquí
-		// Mover fantasmas
-		for(var i=0; i<numGhosts;i++){
-			ghosts[i].move();
+		// sólo en modo NORMAL
+
+		if (thisGame.mode == thisGame.NORMAL){
+
+			// >=test4
+			checkInputs();
+
+			// test10
+			// Tu código aquí
+			// Mover fantasmas
+			for(let i = 0; i<numGhosts; i++){
+				ghosts[i].move();
+			}
+
+			// >=test3
+			//ojo: en el test3 esta instrucción es pacman.move()
+			player.move();
 		}
 
-		player.move();
+		// test14
+		// en modo HIT_GHOST
+		// seguir el enunciado...
+		// Tu código aquí
+
+		else if (thisGame.mode == thisGame.HIT_GHOST){
+			thisGame.modeTimer++;
+			if(thisGame.modeTimer == 90){ //Esperamos 1.5 segundos
+				/*if(thisGame.lifes-1==0){
+					thisGame.setMode(thisGame.GAME_OVER);
+				}*/
+				//else{
+					//thisGame.lifes--;
+					thisGame.setMode(thisGame.WAIT_TO_START); //Modificamos el estado del juego
+					reset(); //Reseteamos las posiciones de los fantasmas y de Pacman
+				//}
+			}
+		}
+
+		// test14
+		// en modo WAIT_TO_START
+		// seguir el enunciado...
+		// Tu código aquí
+
+		else if(thisGame.mode==thisGame.WAIT_TO_START){
+			thisGame.modeTimer++;
+			if(thisGame.modeTimer == 30){ //Esperamos 0.5 seg
+				thisGame.setMode(thisGame.NORMAL);
+			}
+
+			//
+			//
+		}
+
 		// Clear the canvas
 		clearCanvas();
 
@@ -835,81 +874,6 @@ var GF = function(){
 		// call the animation loop every 1/60th of second
 		requestAnimationFrame(mainLoop);
 
-
-		//test14
-		/*if (thisGame.mode == thisGame.GAME_OVER){
-            thisLevel.displayGameOver();
-        } else{
-            // test14
-            // Tu código aquí
-            // sólo en modo NORMAL
-
-            if (thisGame.mode == thisGame.NORMAL){
-                // >=test4
-                checkInputs();
-                // test10
-                // Tu código aquí
-                // Mover fantasmas
-                for(let i = 0; i<numGhosts; i++){
-                    ghosts[i].move();
-                }
-                // >=test3
-                //ojo: en el test3 esta instrucción es pacman.move()
-                player.move();
-            }
-
-            // test14
-            // en modo HIT_GHOST
-            // seguir el enunciado...
-            // Tu código aquí
-            else if (thisGame.mode === thisGame.HIT_GHOST){
-                thisGame.modeTimer++;
-                if(thisGame.modeTimer >= 90) {
-                    thisGame.lifes--;
-                    if(thisGame.lifes === 0)
-                        thisGame.setMode(thisGame.GAME_OVER);
-                    else {
-                        thisGame.setMode(thisGame.WAIT_TO_START);
-                        reset();
-                    }
-                }
-            }
-
-            // test14
-            // en modo WAIT_TO_START
-            // seguir el enunciado...
-            // Tu código aquí
-            else if (thisGame.mode === thisGame.WAIT_TO_START){
-                thisGame.modeTimer++;
-                if(thisGame.modeTimer >= 30) {
-                    thisGame.setMode(thisGame.NORMAL);
-                }
-            }
-
-            // >=test2
-            // Clear the canvas
-            clearCanvas();
-            // >=test6
-            thisLevel.drawMap();
-            thisLevel.displayScore();
-            // test10
-            // Tu código aquí
-            // Pintar fantasmas
-            for(let i = 0; i<numGhosts; i++){
-                ghosts[i].draw();
-            }
-
-            // >=test3
-            //ojo: en el test3 esta instrucción es pacman.draw()
-            player.draw();
-
-            // >=test12
-            updateTimers();
-
-            // call the animation loop every 1/60th of second
-            // comentar esta instrucción en el test3
-            requestAnimationFrame(mainLoop);
-        }*/
 	};
 
 
@@ -1047,19 +1011,19 @@ var GF = function(){
 		start: start,
 
 		// solo para el test 10
-		// ghost: Ghost,  // exportando Ghost para poder probarla
+		 ghost: Ghost,  // exportando Ghost para poder probarla
 
 		// solo para estos test: test12 y test13
 		ghosts: ghosts,
 
 		// solo para el test12
-		//thisLevel: thisLevel,
+		thisLevel: thisLevel,
 
 		// solo para el test 13
 		Ghost: Ghost,
 
 		// solo para el test14
-		// thisGame: thisGame
+		thisGame: thisGame
 	};
 };
 
