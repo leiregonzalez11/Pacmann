@@ -139,6 +139,7 @@ var GF = function(){
 			var colGhost = Math.trunc(((this.x)/24));
 			// Tu código aquí
 			if(this.state!=Ghost.SPECTACLES){
+
 				if(this.x%thisGame.TILE_WIDTH!=0  &&  this.x%(thisGame.TILE_WIDTH/2)==0  &&  this.y%thisGame.TILE_HEIGHT!=0  &&  this.y%(thisGame.TILE_HEIGHT/2)==0){
 
 
@@ -171,7 +172,7 @@ var GF = function(){
 
 
 					//Si hay cruce o va a chocar
-					if(posiblesMovimientos.length>=3  ||  this.velX<0 && thisLevel.isWall(filaGhost, colGhost-1)  ||
+					if(posiblesMovimientos.length >=3  ||  this.velX < 0 && thisLevel.isWall(filaGhost, colGhost-1)  ||
 						this.velX>0 && thisLevel.isWall(filaGhost, colGhost+1)  ||
 						this.velY<0 && thisLevel.isWall(filaGhost-1, colGhost)  ||
 						this.velY>0 && thisLevel.isWall(filaGhost+1, colGhost)  ||
@@ -200,15 +201,14 @@ var GF = function(){
 
 				}
 
-
 				this.x=this.x+this.velX;
 				this.y=this.y+this.velY;
 			}
-				//
-				//
-				// Test13 Tu código aquí
-				// Si el estado del fantasma es Ghost.SPECTACLES
+
+			// Test13 Tu código aquí
+			// Si el estado del fantasma es Ghost.SPECTACLES
 			// Mover el fantasma lo más recto posible hacia la casilla de salida
+
 			else{
 				if(this.x < w/2){this.x = this.x + this.velX;}
 				else{this.x=this.x - this.velX;}
@@ -413,6 +413,7 @@ var GF = function(){
 			if (baldosa == tileID.pellet){
 				this.setMapTile(fila, columna, 0); //Cambiamos el tipo de baldosa
 				this.pellets--; //Restamos 1 al nº de pildoras que quedan por recoger
+				thisGame.addToScore(10) //Sumamos 10 puntos al score
 			}
 
 			// test9
@@ -454,12 +455,37 @@ var GF = function(){
 				this.setMapTile(fila, columna, 0); //Cambiamos el tipo de baldosa
 				this.pellets--; //Restamos 1 al nº de pildoras que quedan por recoger
 				thisGame.ghostTimer = 360;  // Inicializamos el valor de ghostTimer a 360 (6 seg. aprox.)
+				thisGame.addToScore(25) //Sumamos 25 puntos al score
 				for (let i = 0; i<numGhosts; i++){ //Cambiamos el estado de los fantasmas
 					ghosts[i].state = Ghost.VULNERABLE;
 				}
 
 			}
 
+		};
+
+		this.displayScore = function() {
+			ctx.beginPath();
+			ctx.font = "18px Arial";
+			ctx.fillStyle = "red";
+			ctx.fillText("1UP ",TILE_WIDTH,TILE_HEIGHT-5);
+			ctx.closePath();
+			ctx.beginPath();
+			ctx.beginPath();
+			ctx.fillStyle = "#fff";
+			ctx.fillText(thisGame.points,TILE_WIDTH*4,TILE_HEIGHT-5);
+			ctx.closePath();
+			ctx.fillStyle = "red";
+			ctx.fillText("  HIGH SCORE",TILE_WIDTH*12,TILE_HEIGHT-5);
+			ctx.closePath();
+			ctx.beginPath();
+			ctx.fillStyle = "#fff";
+			ctx.fillText("0",TILE_WIDTH*19,TILE_HEIGHT-5);
+			ctx.closePath();
+			ctx.beginPath();
+			ctx.fillStyle = "#fff";
+			ctx.fillText("Lifes: " + thisGame.lifes,TILE_WIDTH,TILE_HEIGHT*25-5);
+			ctx.closePath();
 		};
 
 
@@ -578,6 +604,7 @@ var GF = function(){
 					ghosts[i].velX = -ghosts[i].speed;
 					ghosts[i].velY = -ghosts[i].speed;
 					ghosts[i].state = Ghost.SPECTACLES;
+					thisGame.addToScore(100)
 				}
 
 				// test14
@@ -586,6 +613,7 @@ var GF = function(){
 
 				else if (ghosts[i].state == Ghost.NORMAL){
                     thisGame.setMode(thisGame.HIT_GHOST);
+					thisGame.addToScore(-50)
                 }
 
 			}
@@ -697,6 +725,7 @@ var GF = function(){
 		ctx.clearRect(0, 0, w, h);
 	};
 
+
 	// >=test4
 	let checkInputs = function(){
 		// test4
@@ -802,11 +831,27 @@ var GF = function(){
 		// main function, called each frame
 		measureFPS(time);
 
+		if (thisGame.mode == thisGame.GAME_OVER){
+			clearCanvas();
+
+			ctx.beginPath();
+			ctx.rect(0, 0, w, h);
+			ctx.closePath();
+			ctx.strokeStyle = "black";
+			ctx.stroke();
+			ctx.fillStyle = "black";
+			ctx.fill();
+
+			ctx.font = "30px Arial";
+			ctx.fillStyle = "red";
+			ctx.fillText("GAME OVER", (w - 9 * 25) / 2, h / 2);
+		}
+
 		// test14
 		// Tu código aquí
 		// sólo en modo NORMAL
 
-		if (thisGame.mode == thisGame.NORMAL){
+		else if (thisGame.mode == thisGame.NORMAL){
 
 			// >=test4
 			checkInputs();
@@ -831,14 +876,14 @@ var GF = function(){
 		else if (thisGame.mode == thisGame.HIT_GHOST){
 			thisGame.modeTimer++;
 			if(thisGame.modeTimer == 90){ //Esperamos 1.5 segundos
-				/*if(thisGame.lifes-1==0){
+				thisGame.lifes--; //Restamos una vida
+				if(thisGame.lifes == 0){ //Si no quedan mas vidas
 					thisGame.setMode(thisGame.GAME_OVER);
-				}*/
-				//else{
-					//thisGame.lifes--;
+				}
+				else{
 					thisGame.setMode(thisGame.WAIT_TO_START); //Modificamos el estado del juego
 					reset(); //Reseteamos las posiciones de los fantasmas y de Pacman
-				//}
+				}
 			}
 		}
 
@@ -852,9 +897,6 @@ var GF = function(){
 			if(thisGame.modeTimer == 30){ //Esperamos 0.5 seg
 				thisGame.setMode(thisGame.NORMAL);
 			}
-
-			//
-			//
 		}
 
 		// Clear the canvas
@@ -869,7 +911,7 @@ var GF = function(){
 		}
 
 		player.draw();
-
+		thisLevel.displayScore();
 		updateTimers();
 		// call the animation loop every 1/60th of second
 		requestAnimationFrame(mainLoop);
