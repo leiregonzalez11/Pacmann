@@ -911,22 +911,22 @@ var GF = function(){
 		// Tu código aquí
         window.addEventListener( "keydown", function(event){
             tecla = event.keyCode;
-            if(tecla == 37){ //Izquierda
+            if(tecla == 37 || tecla == 65){ //Izquierda (arrow o tecla A)
 				inputStates.left=true;
 				inputStates.right=false;
 				inputStates.up=false;
 				inputStates.space=false;
 				inputStates.down=false;
             }
-			else if(tecla == 39){ //Derecha
+			else if(tecla == 39 || tecla == 68){ //Derecha (arrow o tecla D)
 				inputStates.right = true;
 				inputStates.left = inputStates.down = inputStates.up = inputStates.space = false;
             }
-			else if(tecla == 38){ //Arriba
+			else if(tecla == 38 || tecla == 87){ //Arriba (arrow o tecla w)
 				inputStates.up = true;
 				inputStates.right = inputStates.left = inputStates.down = inputStates.space = false;
             }
-			else if(tecla == 40){ //Abajo
+			else if(tecla == 40 || tecla == 83){ //Abajo (arrow o tecla S)
 				inputStates.down = true;
 				inputStates.up = inputStates.right = inputStates.left = inputStates.space = false;
             }
