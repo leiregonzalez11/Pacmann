@@ -414,6 +414,7 @@ var GF = function(){
 				this.setMapTile(fila, columna, 0); //Cambiamos el tipo de baldosa
 				this.pellets--; //Restamos 1 al nº de pildoras que quedan por recoger
 				thisGame.addToScore(10) //Sumamos 10 puntos al score
+				eating.play();
 			}
 
 			// test9
@@ -456,6 +457,7 @@ var GF = function(){
 				this.pellets--; //Restamos 1 al nº de pildoras que quedan por recoger
 				thisGame.ghostTimer = 360;  // Inicializamos el valor de ghostTimer a 360 (6 seg. aprox.)
 				thisGame.addToScore(25) //Sumamos 25 puntos al score
+				eatpill.play();
 				for (let i = 0; i<numGhosts; i++){ //Cambiamos el estado de los fantasmas
 					ghosts[i].state = Ghost.VULNERABLE;
 				}
@@ -579,7 +581,8 @@ var GF = function(){
 					ghosts[i].velX = -ghosts[i].speed;
 					ghosts[i].velY = -ghosts[i].speed;
 					ghosts[i].state = Ghost.SPECTACLES;
-					thisGame.addToScore(100)
+					thisGame.addToScore(100);
+					eatghost.play();
 				}
 
 				// test14
@@ -588,7 +591,8 @@ var GF = function(){
 
 				else if (ghosts[i].state == Ghost.NORMAL){
                     thisGame.setMode(thisGame.HIT_GHOST);
-					thisGame.addToScore(-50)
+					thisGame.addToScore(-50);
+					eatenbyGhost.play();
                 }
 
 			}
@@ -873,6 +877,7 @@ var GF = function(){
 					thisGame.lifes--; //Restamos una vida
 					if (thisGame.lifes == 0) { //Si no quedan mas vidas
 						thisGame.setMode(thisGame.GAME_OVER);
+						die.play();
 					} else {
 						thisGame.setMode(thisGame.WAIT_TO_START); //Modificamos el estado del juego
 						reset(); //Reseteamos las posiciones de los fantasmas y de Pacman
@@ -977,8 +982,8 @@ var GF = function(){
 					player.y = j * TILE_HEIGHT + (TILE_HEIGHT/2);
 				}
 
-					// test10
-					// Tu código aquí
+				// test10
+				// Tu código aquí
 				// Inicializa los atributos x,y, velX, velY, speed de la clase Ghost de forma conveniente
 
 				else if(baldosa == 10){
@@ -1022,6 +1027,35 @@ var GF = function(){
 		//thisGame.setMode( thisGame.NORMAL);
 	};
 
+	var loadAssets = function(){
+		eatpill = new Howl({src: ['../res/sounds/eat-pill.mp3'],
+			volume: 1,
+			onload: function() {
+				eating = new Howl({src: ['../res/sounds/eating.mp3'],
+					volume: 1,
+					onload: function() {
+						eatghost = new Howl({src: ['../res/sounds/eat-ghost.mp3'],
+							volume: 1,
+							onload: function() {
+								die = new Howl({src: ['../res/sounds/die.mp3'],
+									volume: 1,
+									onload: function() {
+										eatenbyGhost = new Howl({src: ['../res/sounds/eatenghost.mp3'],
+											volume: 1,
+											onload: function() {
+												requestAnimationFrame(mainLoop); // comenzar animación
+											}});
+									}
+								});
+							}
+						});
+					}
+				});
+			}
+		});
+
+	}
+
 	// >=test1
 	var start = function(){
 
@@ -1037,7 +1071,7 @@ var GF = function(){
 		reset();
 
 		// start the animation
-		requestAnimationFrame(mainLoop);
+		loadAssets();
 	};
 
 	// >=test1
